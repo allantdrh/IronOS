@@ -12,10 +12,6 @@
     "SleepingSimpleString": "Zzzz",
     "SleepingAdvancedString": "Sleeping...",
     "SleepingTipAdvancedString": "Tip:",
-    "IdleTipString": "Tip:",
-    "IdleSetString": " Set:",
-    "TipDisconnectedString": "NO TIP",
-    "SolderingAdvancedPowerPrompt": "Power: ",
     "OffString": "關"
   },
   "messagesWarn": {
@@ -46,8 +42,7 @@
     "SettingSensitivityHigh": "高",
     "SettingLockDisableChar": "無",
     "SettingLockBoostChar": "增",
-    "SettingLockFullChar": "全",
-    "SettingNAChar": "不適用"
+    "SettingLockFullChar": "全"
   },
   "menuGroups": {
     "PowerMenu": {
@@ -82,11 +77,11 @@
     },
     "SleepTimeout": {
       "text2": "待機延時",
-      "desc": "自動進入待機模式前的閒置等候時間 <S=秒 | M=分鐘>"
+      "desc": "自動進入待機模式前的閒置等候時間 <s=秒 | m=分鐘>"
     },
     "ShutdownTimeout": {
       "text2": "自動關機",
-      "desc": "自動關機前的閒置等候時間 <M=分鐘>"
+      "desc": "自動關機前的閒置等候時間 <m=分鐘>"
     },
     "MotionSensitivity": {
       "text2": "動作敏感度",
@@ -166,7 +161,7 @@
     },
     "HallEffSensitivity": {
       "text2": "磁場敏感度",
-      "desc": "磁場感應器用作啟動待機模式的敏感度 <關=停用 | 低=最低敏感度 | 中=中等敏感度 | 高=最高敏感度>"
+      "desc": "磁場感應器用作啟動待機模式的敏感度 <0=停用 | 1=最低敏感度 | ... | 9=最高敏感度>"
     },
     "LockingMode": {
       "text2": "按鍵鎖定",
@@ -203,6 +198,10 @@
     "ColourInversion": {
       "text2": "螢幕反轉色",
       "desc": "反轉OLED螢幕的黑白色彩"
+    },
+    "LOGOTime": {
+      "text2": ["Boot logo", "duration"],
+      "desc": "Sets the duration for the boot logo (s=seconds)"
     }
   }
 }

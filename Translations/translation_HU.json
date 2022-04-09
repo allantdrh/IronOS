@@ -4,18 +4,14 @@
   "fonts": ["ascii_basic", "latin_extended"],
   "tempUnitFahrenheit": false,
   "messages": {
-    "SettingsCalibrationWarning": "Folytatás előtt győződjön meg róla, hogy a páka szobahőmérsékletű!",
+    "SettingsCalibrationWarning": "Folytatás előtt győződjön meg róla, hogy a forrasztó hegy szobahőmérsékletű!",
     "SettingsResetWarning": "Biztos visszaállítja a beállításokat alapértékekre?",
-    "UVLOWarningString": "DC KEVÉS",
+    "UVLOWarningString": "DC TÚL KEVÉS",
     "UndervoltageString": "Alulfeszültség",
     "InputVoltageString": "Bemenet V: ",
     "SleepingSimpleString": "Zzzz",
     "SleepingAdvancedString": "Alvás...",
-    "SleepingTipAdvancedString": "Páka:",
-    "IdleTipString": "Páka:",
-    "IdleSetString": " Cél:",
-    "TipDisconnectedString": "PÁKA LEVÉVE",
-    "SolderingAdvancedPowerPrompt": "Telj.: ",
+    "SleepingTipAdvancedString": "Hegy:",
     "OffString": "Ki"
   },
   "messagesWarn": {
@@ -46,8 +42,7 @@
     "SettingSensitivityHigh": "M",
     "SettingLockDisableChar": "K",
     "SettingLockBoostChar": "B",
-    "SettingLockFullChar": "T",
-    "SettingNAChar": "N/A"
+    "SettingLockFullChar": "T"
   },
   "menuGroups": {
     "PowerMenu": {
@@ -114,11 +109,11 @@
     },
     "CooldownBlink": {
       "text2": ["Villogás", "hűléskor"],
-      "desc": "Villogjon a hőmérséklet kijelzése hűlés közben, amíg a páka forró"
+      "desc": "Villogjon a hőmérséklet kijelzése hűlés közben, amíg a forrasztó hegy forró"
     },
     "TemperatureCalibration": {
       "text2": ["Hőmérséklet", "kalibrálása?"],
-      "desc": "Páka hőmérséklet-érzékelőjének kalibrálása"
+      "desc": "Forrasztó hegy hőmérséklet-érzékelőjének kalibrálása"
     },
     "SettingsReset": {
       "text2": ["Gyári", "beállítások?"],
@@ -150,7 +145,7 @@
     },
     "ReverseButtonTempChange": {
       "text2": ["+/- gomb", "megfordítása"],
-      "desc": "Páka hőmérsékletállító gombok felcserélése"
+      "desc": "Forrasztó hegy hőmérsékletállító gombok felcserélése"
     },
     "TempChangeShortStep": {
       "text2": ["Hőm. állítás", "rövid"],
@@ -166,7 +161,7 @@
     },
     "HallEffSensitivity": {
       "text2": ["Alvásérzékelő", "érzékenység"],
-      "desc": "Alvásérzékelő gyorsulásmérő érzékenysége (0=ki | A=alacsony | K=közepes | M=magas)"
+      "desc": "Alvásérzékelő gyorsulásmérő érzékenysége (0=kikapcsolva | 1=legkevésbé érzékeny | ... | 9=legérzékenyebb)"
     },
     "LockingMode": {
       "text2": ["Lezárás", "engedélyezés"],
@@ -203,6 +198,10 @@
     "ColourInversion": {
       "text2": ["Képernyő", "invertálás"],
       "desc": "Képernyő színeinek invertálása"
+    },
+    "LOGOTime": {
+      "text2": ["Boot logo", "duration"],
+      "desc": "Sets the duration for the boot logo (s=seconds)"
     }
   }
 }

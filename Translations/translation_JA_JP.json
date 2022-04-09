@@ -12,10 +12,6 @@
     "SleepingSimpleString": "Zzzz",
     "SleepingAdvancedString": "Sleeping...",
     "SleepingTipAdvancedString": "Tip:",
-    "IdleTipString": "Tip:",
-    "IdleSetString": " Set:",
-    "TipDisconnectedString": "NO TIP",
-    "SolderingAdvancedPowerPrompt": "Power: ",
     "OffString": "オフ"
   },
   "messagesWarn": {
@@ -46,8 +42,7 @@
     "SettingSensitivityHigh": "高",
     "SettingLockDisableChar": "×",
     "SettingLockBoostChar": "ブ",
-    "SettingLockFullChar": "全",
-    "SettingNAChar": "非適用"
+    "SettingLockFullChar": "全"
   },
   "menuGroups": {
     "PowerMenu": {
@@ -82,11 +77,11 @@
     },
     "SleepTimeout": {
       "text2": "待機遅延",
-      "desc": "スタンバイモードに入るまでの待機時間 <S=秒 | M=分>"
+      "desc": "スタンバイモードに入るまでの待機時間 <s=秒 | m=分>"
     },
     "ShutdownTimeout": {
       "text2": "自動オフ",
-      "desc": "自動電源オフまでの待機時間 <M=分>"
+      "desc": "自動電源オフまでの待機時間 <m=分>"
     },
     "MotionSensitivity": {
       "text2": "動きの感度",
@@ -166,7 +161,7 @@
     },
     "HallEffSensitivity": {
       "text2": "磁界感度",
-      "desc": "スタンバイモードに入るのに使用される磁場センサーの感度 <×=オフ | 低=最低感度 | 中=中程度の感度 | 高=最高感度>"
+      "desc": "スタンバイモードに入るのに使用される磁場センサーの感度 <0=オフ | 1=最低感度 | ... | 9=最高感度>"
     },
     "LockingMode": {
       "text2": "ボタンロック",
@@ -203,6 +198,10 @@
     "ColourInversion": {
       "text2": "色反転",
       "desc": "画面の色を反転する"
+    },
+    "LOGOTime": {
+      "text2": ["Boot logo", "duration"],
+      "desc": "Sets the duration for the boot logo (s=seconds)"
     }
   }
 }

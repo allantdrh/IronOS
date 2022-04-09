@@ -1,11 +1,11 @@
 /*
- * gui.cpp
+ * settingsGUI.cpp
  *
  *  Created on: 3Sep.,2017
  *      Author: Ben V. Brown
  */
 
-#include "gui.hpp"
+#include "settingsGUI.hpp"
 #include "Buttons.hpp"
 #include "ScrollMessage.hpp"
 #include "TipThermoModel.h"
@@ -69,9 +69,11 @@ static bool settings_showPowerPulseOptions(void);
 static void settings_displayPowerPulseDuration(void);
 static void settings_displayBrightnessLevel(void);
 static void settings_displayInvertColor(void);
+static void settings_displayLogoTime(void);
 
 #ifdef HALL_SENSOR
 static void settings_displayHallEffect(void);
+static bool settings_showHallEffect(void);
 #endif
 // Menu functions
 
@@ -206,7 +208,7 @@ const menuitem PowerSavingMenu[] = {
     {SETTINGS_DESC(SettingsItemIndex::ShutdownTimeout), nullptr, settings_displayShutdownTime, settings_showSleepOptions, SettingsOptions::ShutdownTime},                      /*Shutdown Time*/
 #endif
 #ifdef HALL_SENSOR
-    {SETTINGS_DESC(SettingsItemIndex::HallEffSensitivity), nullptr, settings_displayHallEffect, nullptr, SettingsOptions::HallEffectSensitivity}, /* HallEffect Sensitivity*/
+    {SETTINGS_DESC(SettingsItemIndex::HallEffSensitivity), nullptr, settings_displayHallEffect, settings_showHallEffect, SettingsOptions::HallEffectSensitivity}, /* HallEffect Sensitivity*/
 #endif
     {0, nullptr, nullptr, nullptr, SettingsOptions::SettingsOptionsLength} // end of menu marker. DO NOT REMOVE
 };
@@ -222,6 +224,7 @@ const menuitem UIMenu[] = {
      *  -Animation Loop
      *  OLED Brightnes
      *  Invert Screen
+     *  Logo Timeout
      *  Detailed IDLE
      *  Detailed Soldering
      */
@@ -238,6 +241,7 @@ const menuitem UIMenu[] = {
     {SETTINGS_DESC(SettingsItemIndex::AnimLoop), nullptr, settings_displayAnimationLoop, settings_displayAnimationOptions, SettingsOptions::AnimationLoop}, /*Animation Loop switch */
     {SETTINGS_DESC(SettingsItemIndex::Brightness), nullptr, settings_displayBrightnessLevel, nullptr, SettingsOptions::OLEDBrightness},                     /*Brightness Level*/
     {SETTINGS_DESC(SettingsItemIndex::ColourInversion), nullptr, settings_displayInvertColor, nullptr, SettingsOptions::OLEDInversion},                     /*Invert screen colour*/
+    {SETTINGS_DESC(SettingsItemIndex::LOGOTime), nullptr, settings_displayLogoTime, nullptr, SettingsOptions::LOGOTime},                                    /*Set logo duration*/
     {SETTINGS_DESC(SettingsItemIndex::AdvancedIdle), nullptr, settings_displayAdvancedIDLEScreens, nullptr, SettingsOptions::DetailedIDLE},                 /*Advanced idle screen*/
     {SETTINGS_DESC(SettingsItemIndex::AdvancedSoldering), nullptr, settings_displayAdvancedSolderingScreens, nullptr, SettingsOptions::DetailedSoldering},  /*Advanced soldering screen*/
     {0, nullptr, nullptr, nullptr, SettingsOptions::SettingsOptionsLength}                                                                                  // end of menu marker. DO NOT REMOVE
@@ -325,8 +329,8 @@ static void settings_displayInputVRange(void) {
 
 static bool settings_showInputVOptions(void) { return getSettingValue(SettingsOptions::MinDCVoltageCells) > 0; }
 static void settings_displayInputMinVRange(void) {
-  printShortDescription(SettingsItemIndex::MinVolCell, 4);
-  OLED::printNumber(getSettingValue(SettingsOptions::MinVoltageCells) / 10, 2, FontStyle::LARGE);
+  printShortDescription(SettingsItemIndex::MinVolCell, 5);
+  OLED::printNumber(getSettingValue(SettingsOptions::MinVoltageCells) / 10, 1, FontStyle::LARGE);
   OLED::print(SymbolDot, FontStyle::LARGE);
   OLED::printNumber(getSettingValue(SettingsOptions::MinVoltageCells) % 10, 1, FontStyle::LARGE);
 }
@@ -448,7 +452,6 @@ static bool settings_setTempF(void) {
 
 static void settings_displayTempF(void) {
   printShortDescription(SettingsItemIndex::TemperatureUnit, 7);
-
   OLED::print((getSettingValue(SettingsOptions::TemperatureInF)) ? SymbolDegF : SymbolDegC, FontStyle::LARGE);
 }
 
@@ -459,7 +462,6 @@ static void settings_displayAdvancedSolderingScreens(void) {
 
 static void settings_displayAdvancedIDLEScreens(void) {
   printShortDescription(SettingsItemIndex::AdvancedIdle, 7);
-
   OLED::drawCheckbox(getSettingValue(SettingsOptions::DetailedIDLE));
 }
 
@@ -754,9 +756,9 @@ static void settings_displayPowerPulseDuration(void) {
 
 static void settings_displayBrightnessLevel(void) {
   OLED::drawArea(0, 0, 16, 16, brightnessIcon);
-  OLED::setCursor(5 * FONT_12_WIDTH - 2, 0);
+  OLED::setCursor(6 * FONT_12_WIDTH - 2, 0);
   // printShortDescription(SettingsItemIndex::Brightness, 7);
-  OLED::printNumber((getSettingValue(SettingsOptions::OLEDBrightness) / 11 + 1), 3, FontStyle::LARGE);
+  OLED::printNumber((getSettingValue(SettingsOptions::OLEDBrightness) / 11 + 1), 2, FontStyle::LARGE);
   // While not optimal to apply this here, it is _very_ convienient
   OLED::setBrightness(getSettingValue(SettingsOptions::OLEDBrightness));
 }
@@ -765,31 +767,29 @@ static void settings_displayInvertColor(void) {
   OLED::drawArea(0, 0, 24, 16, invertDisplayIcon);
   OLED::setCursor(7 * FONT_12_WIDTH - 2, 0);
   // printShortDescription(SettingsItemIndex::ColourInversion, 7);
-
   OLED::drawCheckbox(getSettingValue(SettingsOptions::OLEDInversion));
   // While not optimal to apply this here, it is _very_ convienient
   OLED::setInverseDisplay(getSettingValue(SettingsOptions::OLEDInversion));
 }
 
+static void settings_displayLogoTime(void) {
+  printShortDescription(SettingsItemIndex::LOGOTime, 5);
+  if (getSettingValue(SettingsOptions::LOGOTime) == 0) {
+    OLED::print(translatedString(Tr->OffString), FontStyle::LARGE);
+  } else if (getSettingValue(SettingsOptions::LOGOTime) == 5) {
+    OLED::drawArea(OLED_WIDTH - 24 - 2, 0, 24, 16, infinityIcon);
+  } else {
+    OLED::printNumber(getSettingValue(SettingsOptions::LOGOTime), 2, FontStyle::LARGE);
+    OLED::print(SymbolSeconds, FontStyle::LARGE);
+  }
+}
+
 #ifdef HALL_SENSOR
 static void settings_displayHallEffect(void) {
   printShortDescription(SettingsItemIndex::HallEffSensitivity, 7);
-  switch (getSettingValue(SettingsOptions::HallEffectSensitivity)) {
-  case 1:
-    OLED::print(translatedString(Tr->SettingSensitivityLow), FontStyle::LARGE);
-    break;
-  case 2:
-    OLED::print(translatedString(Tr->SettingSensitivityMedium), FontStyle::LARGE);
-    break;
-  case 3:
-    OLED::print(translatedString(Tr->SettingSensitivityHigh), FontStyle::LARGE);
-    break;
-  case 0:
-  default:
-    OLED::print(translatedString(Tr->SettingSensitivityOff), FontStyle::LARGE);
-    break;
-  }
+  OLED::printNumber(getSettingValue(SettingsOptions::HallEffectSensitivity), 1, FontStyle::LARGE, false);
 }
+static bool settings_showHallEffect(void) { return getHallSensorFitted(); }
 #endif
 
 // Indicates whether a menu transition is in progress, so that the menu icon

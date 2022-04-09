@@ -95,7 +95,7 @@
 #define DETAILED_IDLE      0 // 0: Disable 1: Enable - Default 0
 
 #define THERMAL_RUNAWAY_TIME_SEC 20
-#define THERMAL_RUNAWAY_TEMP_C   20
+#define THERMAL_RUNAWAY_TEMP_C   10
 
 #define CUT_OUT_SETTING          0  // default to no cut-off voltage
 #define RECOM_VOL_CELL           33 // Minimum voltage per cell (Recommended 3.3V (33))
@@ -124,6 +124,14 @@
 #error "No model defined!"
 #endif
 
+// Miniware is swapping IMU's around a bit now, so we turn them all on
+
+#define ACCEL_MMA
+#define ACCEL_LIS
+#define ACCEL_SC7
+#define ACCEL_MSA
+#define ACCEL_BMA
+
 #ifdef MODEL_TS100
 #define SOLDERING_TEMP         320                     // Default soldering temp is 320.0 °C
 #define VOLTAGE_DIV            467                     // 467 - Default divider from schematic
@@ -144,9 +152,9 @@
 #define MIN_BOOST_TEMP_C       250                     // The min settable temp for boost mode °C
 #define MIN_BOOST_TEMP_F       480                     // The min settable temp for boost mode °F
 #define POW_DC
-#define ACCEL_MMA
+
 #define POW_PD 0
-#define ACCEL_LIS
+
 #define TEMP_TMP36
 #endif
 
@@ -169,7 +177,7 @@
 #define MIN_TEMP_F             60                     // Min soldering temp selectable °F
 #define MIN_BOOST_TEMP_C       250                    // The min settable temp for boost mode °C
 #define MIN_BOOST_TEMP_F       480                    // The min settable temp for boost mode °F
-#define ACCEL_LIS
+
 #define POW_QC
 #define POW_PD 0
 #define TEMP_TMP36
@@ -196,13 +204,13 @@
 #define MIN_TEMP_F             60                     // Min soldering temp selectable °F
 #define MIN_BOOST_TEMP_C       250                    // The min settable temp for boost mode °C
 #define MIN_BOOST_TEMP_F       480                    // The min settable temp for boost mode °F
-#define ACCEL_LIS
-#define ACCEL_MSA
+
 #define POW_PD 1
 #define POW_QC 1
 #define TEMP_NTC
 #define I2C_SOFT
 #define LIS_ORI_FLIP
+#define SC7_ORI_FLIP
 #define OLED_FLIP
 #endif
 
@@ -224,3 +232,5 @@
 #define TIP_RESISTANCE           45 // x10 ohms, 4.5 typical for ts80 tips
 #endif
 #endif
+
+#define FLASH_LOGOADDR (0x08000000 + (62 * 1024))

@@ -8,14 +8,10 @@
     "SettingsResetWarning": "Вы уверены, что хотите сбросить настройки к значениям по умолчанию?",
     "UVLOWarningString": "НАПРЯЖ--",
     "UndervoltageString": "Низ. напряжение",
-    "InputVoltageString": "Питание В: ",			  
+    "InputVoltageString": "Питание В: ",
     "SleepingSimpleString": "Zzzz",
     "SleepingAdvancedString": "Ожидание...",
     "SleepingTipAdvancedString": "Жало:",
-    "IdleTipString": "Жало:",
-    "IdleSetString": " ->",
-    "TipDisconnectedString": "ЖАЛО ОТСОЕДИНЕНО",
-    "SolderingAdvancedPowerPrompt": "Питание: ",
     "OffString": "Вык"
   },
   "messagesWarn": {
@@ -46,8 +42,7 @@
     "SettingSensitivityHigh": "В",
     "SettingLockDisableChar": "О",
     "SettingLockBoostChar": "Т",
-    "SettingLockFullChar": "П",
-    "SettingNAChar": "Н/Д"
+    "SettingLockFullChar": "П"
   },
   "menuGroups": {
     "PowerMenu": {
@@ -137,8 +132,8 @@
       "desc": "Скорость прокрутки текста (М=медленно | Б=быстро)"
     },
     "QCMaxVoltage": {
-      "text2": ["Мощность", "питания"],
-      "desc": "Мощность используемого источника питания"
+      "text2": ["Максимальный", "вольтаж для QC"],
+      "desc": "Максимальный поддерживаемый QC вольтаж используемого источника питания"
     },
     "PDNegTimeout": {
       "text2": ["PD", "тайм-аут"],
@@ -166,7 +161,7 @@
     },
     "HallEffSensitivity": {
       "text2": ["Датчик", "Холла"],
-      "desc": "Уровень чувствительности датчика холла в режиме сна (О=Отключено | Н=Низкий | С=Средний | В=Высокий)"
+      "desc": "Уровень чувствительности датчика холла в режиме сна (0=Выкл. | 1=Мин. | ... | 9=Макс.)"
     },
     "LockingMode": {
       "text2": ["Разрешить", "блок. кнопок"],
@@ -174,7 +169,7 @@
     },
     "MinVolCell": {
       "text2": ["Мин.", "напр."],
-      "desc": "Минимальное разрешенное напряжение на ячейку (3S: 3 - 3,7V | 4-S: 2,4 - 3,7V)"
+      "desc": "Минимальное разрешенное напряжение на ячейку (3S: 3 - 3,7V | 4S-6S: 2,4 - 3,7V)"
     },
     "AnimLoop": {
       "text2": ["Зацикленная", "анимация"],
@@ -203,6 +198,10 @@
     "ColourInversion": {
       "text2": ["Инверт", "экрана"],
       "desc": "Инвертировать цвета на OLED экране"
+    },
+    "LOGOTime": {
+      "text2": ["Boot logo", "duration"],
+      "desc": "Sets the duration for the boot logo (s=seconds)"
     }
   }
 }

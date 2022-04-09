@@ -12,10 +12,6 @@
     "SleepingSimpleString": "Zzzz",
     "SleepingAdvancedString": "Ruhemodus...",
     "SleepingTipAdvancedString": "Temp:",
-    "IdleTipString": "Ist:",
-    "IdleSetString": " Soll:",
-    "TipDisconnectedString": "Spitze fehlt",
-    "SolderingAdvancedPowerPrompt": "Leistung: ",
     "OffString": "Aus"
   },
   "messagesWarn": {
@@ -46,8 +42,7 @@
     "SettingSensitivityHigh": "H",
     "SettingLockDisableChar": "A",
     "SettingLockBoostChar": "B",
-    "SettingLockFullChar": "V",
-    "SettingNAChar": "-"
+    "SettingLockFullChar": "V"
   },
   "menuGroups": {
     "PowerMenu": {
@@ -82,11 +77,11 @@
     },
     "SleepTimeout": {
       "text2": ["Ruhever-", "zögerung"],
-      "desc": "Dauer vor Übergang in den Ruhemodus (S=Sekunden | M=Minuten)"
+      "desc": "Dauer vor Übergang in den Ruhemodus (s=Sekunden | m=Minuten)"
     },
     "ShutdownTimeout": {
       "text2": ["Abschalt-", "verzög."],
-      "desc": "Dauer vor automatischer Abschaltung (M=Minuten)"
+      "desc": "Dauer vor automatischer Abschaltung (m=Minuten)"
     },
     "MotionSensitivity": {
       "text2": ["Bewegungs-", "empfindlichk."],
@@ -166,7 +161,7 @@
     },
     "HallEffSensitivity": {
       "text2": ["Empfindlichkeit", "der Hall-Sonde"],
-      "desc": "Empfindlichkeit der Hall-Sonde beim Erkennen des Ruhemodus (A=aus | N=niedrig | M=mittel | H=hoch)"
+      "desc": "Empfindlichkeit der Hall-Sonde beim Erkennen des Ruhemodus (0=aus | 1=minimal | ... | 9=maximal)"
     },
     "LockingMode": {
       "text2": ["Tasten-", "sperre"],
@@ -203,6 +198,10 @@
     "ColourInversion": {
       "text2": ["Farben", "umkehren"],
       "desc": "Invertiert die Farben des OLED-Displays"
+    },
+    "LOGOTime": {
+      "text2": ["Startlogo-", "dauer"],
+      "desc": "Legt die Dauer der Anzeige des Startlogos fest (s=Sekunden)"
     }
   }
 }

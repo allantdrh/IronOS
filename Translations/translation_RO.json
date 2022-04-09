@@ -4,25 +4,15 @@
   "fonts": ["ascii_basic", "latin_extended"],
   "tempUnitFahrenheit": true,
   "messages": {
-    "SettingsCalibrationDone": "Calibrare completa!",
     "SettingsCalibrationWarning": "Vă rugăm să vă asigurati că vârful este la temperatura camerei, înainte de a continua!",
     "SettingsResetWarning": "Sigur doriti să restaurati la setările implicite?",
     "UVLOWarningString": "DC LOW",
     "UndervoltageString": "Sub tensiune",
     "InputVoltageString": "Intrare V: ",
-    "WarningTipTempString": "Temp. varf: ",
-    "BadTipString": "VARF DEFECT",
     "SleepingSimpleString": "Zzzz",
     "SleepingAdvancedString": "Adormit...",
-    "WarningSimpleString": "FIERBINTE!",
-    "WarningAdvancedString": "!!! VARF FIERBINTE !!!",
     "SleepingTipAdvancedString": "Tip:",
-    "IdleTipString": "Tip:",
-    "IdleSetString": " Set:",
-    "TipDisconnectedString": "FĂRĂ VARF",
-    "SolderingAdvancedPowerPrompt": "Putere: ",
-    "OffString": "Nu",
-    "YourGainMessage": "Coeficient:"
+    "OffString": "Nu"
   },
   "messagesWarn": {
     "ResetOKMessage": "Reset OK",
@@ -52,8 +42,7 @@
     "SettingSensitivityHigh": "H",
     "SettingLockDisableChar": "D",
     "SettingLockBoostChar": "B",
-    "SettingLockFullChar": "F",
-    "SettingNAChar": "N/A"
+    "SettingLockFullChar": "F"
   },
   "menuGroups": {
     "PowerMenu": {
@@ -88,11 +77,11 @@
     },
     "SleepTimeout": {
       "text2": ["Expirare", "repaus"],
-      "desc": "Interval înainte de lansarea \"modului de repaus\" în (S=secunde | M=minute)"
+      "desc": "Interval înainte de lansarea \"modului de repaus\" în (s=secunde | m=minute)"
     },
     "ShutdownTimeout": {
       "text2": ["Expirare", "oprire"],
-      "desc": "Interval înainte ca letconul să se oprească (M=minute)"
+      "desc": "Interval înainte ca letconul să se oprească (m=minute)"
     },
     "MotionSensitivity": {
       "text2": ["Sensibilitate", "la mişcare"],
@@ -172,7 +161,7 @@
     },
     "HallEffSensitivity": {
       "text2": ["Sensibilitate", "senzor Hall"],
-      "desc": "Sensibilitate senzor cu efect Hall pentru a detecta repausul (O=oprit | L=scăzut | M=mediu | H=înalt)"
+      "desc": "Sensibilitate senzor cu efect Hall pentru a detecta repausul (0=oprit | 1=putin sensibil | ... | 9=cel mai sensibil)"
     },
     "LockingMode": {
       "text2": ["Blocare", "butoane"],
@@ -188,7 +177,7 @@
     },
     "AnimSpeed": {
       "text2": ["Animatii", "viteză"],
-      "desc": "Ritmul animatiilor pictogramei din meniu (O=oprit | S=încet | M=mediu | F=rapid)"
+      "desc": "Ritmul animatiilor pictogramei din meniu (O=oprit | Î=încet | M=mediu | R=rapid)"
     },
     "PowerPulseWait": {
       "text2": ["Întârziere", "puls putere"],
@@ -203,12 +192,16 @@
       "desc": "Limba curenta"
     },
     "Brightness": {
-        "text2": ["Ecranului", "luminozitatea"],
-        "desc": "Ajusteaza luminozitatea ecranului"
+      "text2": ["Ecranului", "luminozitatea"],
+      "desc": "Ajusteaza luminozitatea ecranului"
     },
     "ColourInversion": {
-        "text2": ["Inverseaza", "culoarea"],
-        "desc": "Inverseaza culoarea ecranului"
+      "text2": ["Inverseaza", "culoarea"],
+      "desc": "Inverseaza culoarea ecranului"
+    },
+    "LOGOTime": {
+      "text2": ["Boot logo", "duration"],
+      "desc": "Sets the duration for the boot logo (s=seconds)"
     }
   }
 }

@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies (python)
         run: python3 -m pip install bdflib
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
@@ -42,6 +42,15 @@ jobs:
             source/Hexfile/LICENSE_RELEASE.md
           if-no-files-found: error
 
+      - name: Generate json index file
+        run: cd source && python3 metadata.py ${{ matrix.model }}.json
+
+      - name: Archive ${{ matrix.model }} index file
+        uses: actions/upload-artifact@v2
+        with:
+          name: metadata
+          path: source/Hexfile/${{ matrix.model }}.json
+
   build_multi-lang:
     runs-on: ubuntu-20.04
     container:
@@ -57,7 +66,7 @@ jobs:
       - name: Install dependencies (python)
         run: python3 -m pip install bdflib
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
@@ -80,15 +89,30 @@ jobs:
             source/Hexfile/LICENSE_RELEASE.md
           if-no-files-found: error
 
+      - name: Generate json index file
+        run: cd source && python3 metadata.py Pinecil_multi-lang.json
+
+      - name: Archive ${{ matrix.model }} index file
+        uses: actions/upload-artifact@v2
+        with:
+          name: metadata
+          path: source/Hexfile/Pinecil_multi-lang.json
+
   tests:
     runs-on: ubuntu-20.04
+    container:
+      image: alpine:3.15
+
     steps:
-      - uses: actions/checkout@v2
+      - name: deps
+        run: apk add --no-cache python3 py3-pip make git bash findutils gcc musl-dev
+
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
-      - name: Setup
-        run: sudo apt-get update && sudo apt-get install -y python3 && pip3 install bdflib
+      - name: install black
+        run: python3 -m pip install bdflib
 
       - name: Run python tests
         run: cd Translations && chmod +x make_translation_test.py && ./make_translation_test.py
@@ -103,28 +127,19 @@ jobs:
 
   check_formatting:
     runs-on: ubuntu-20.04
+    container:
+      image: alpine:3.15
 
     steps:
-      - uses: actions/checkout@v2
+      - name: deps
+        run: apk add --no-cache python3 py3-pip make git
+
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
-      - name: chmod
-        run: chmod +x setup.sh && chmod +x source/build.sh && sudo mkdir -p /build/cache && sudo chmod -R 777 /build
-
-      - name: Cached compiler source files
-        uses: actions/cache@v2.1.7
-        env:
-          cache-name: cache-compilers
-        with:
-          # we deliberately persist a cache folder forwards
-          path: /build/cache
-          key: ${{ runner.os }}-build-${{ env.cache-name }}
-          restore-keys: |
-            ${{ runner.os }}-
-
-      - name: setup
-        run: sudo apt-get update && sudo apt-get install -y make clang git python3 python3-pip && python3 -m pip install bdflib black flake8
+      - name: install black
+        run: python3 -m pip install bdflib black flake8
 
       - name: Check formatting with clang-format
         run: cd source && make clean && make check-style
@@ -134,3 +149,16 @@ jobs:
 
       - name: Check python with flake8
         run: flake8 Translations
+
+  shellcheck:
+    name: runner / shellcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: shellcheck
+        uses: reviewdog/action-shellcheck@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          reporter: github-pr-review # Change reporter.
+          exclude: "./.git/*" # Optional.
+          check_all_files_with_shebangs: "false" # Optional.

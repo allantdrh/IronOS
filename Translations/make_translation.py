@@ -102,13 +102,18 @@ def get_constants(build_version: str) -> List[Tuple[str, str]]:
         ("SymbolDot", "."),
         ("SymbolDegC", "C"),
         ("SymbolDegF", "F"),
-        ("SymbolMinutes", "M"),
-        ("SymbolSeconds", "S"),
+        ("SymbolMinutes", "m"),
+        ("SymbolSeconds", "s"),
         ("SymbolWatts", "W"),
         ("SymbolVolts", "V"),
+        ("SymbolAmps", "A"),
         ("SymbolDC", "DC"),
         ("SymbolCellCount", "S"),
         ("SymbolVersionNumber", build_version),
+        ("SymbolPDDebug", "PD Debug"),
+        ("SymbolState", "State"),
+        ("SymbolNoVBus", "No VBus"),
+        ("SymbolVBus", "VBus"),
     ]
 
 
@@ -127,6 +132,7 @@ def get_debug_menu() -> List[str]:
         "ACC  ",
         "PWR  ",
         "Max  ",
+        "Hall ",
     ]
 
 
@@ -146,7 +152,8 @@ def get_power_source_list() -> List[str]:
     return [
         "DC",
         "QC",
-        "PD",
+        "PD W. VBus",
+        "PD No VBus",
     ]
 
 

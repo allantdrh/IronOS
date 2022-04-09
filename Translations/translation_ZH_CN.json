@@ -12,10 +12,6 @@
     "SleepingSimpleString": "Zzzz",
     "SleepingAdvancedString": "Zzzz...",
     "SleepingTipAdvancedString": "--->",
-    "IdleTipString": "--->",
-    "IdleSetString": " /",
-    "TipDisconnectedString": "<-X-",
-    "SolderingAdvancedPowerPrompt": "Power: ",
     "OffString": "关"
   },
   "messagesWarn": {
@@ -46,8 +42,7 @@
     "SettingSensitivityHigh": "高",
     "SettingLockDisableChar": "无",
     "SettingLockBoostChar": "增",
-    "SettingLockFullChar": "全",
-    "SettingNAChar": "不适用"
+    "SettingLockFullChar": "全"
   },
   "menuGroups": {
     "PowerMenu": {
@@ -82,11 +77,11 @@
     },
     "SleepTimeout": {
       "text2": "待机超时",
-      "desc": "自动进入待机模式前的等候时间 <S=秒 | M=分钟>"
+        "desc": "自动进入待机模式前的等候时间 <s=秒 | m=分钟>"
     },
     "ShutdownTimeout": {
       "text2": "自动关机",
-      "desc": "自动关机前的等候时间 <M=分钟>"
+      "desc": "自动关机前的等候时间 <m=分钟>"
     },
     "MotionSensitivity": {
       "text2": "动作灵敏度",
@@ -166,7 +161,7 @@
     },
     "HallEffSensitivity": {
       "text2": "磁场灵敏度",
-      "desc": "霍尔效应传感器用作启动待机模式的灵敏度 <关=禁用 | 低=低灵敏度 | 中=中灵敏度 | 高=高灵敏度>"
+      "desc": "霍尔效应传感器用作启动待机模式的灵敏度 <0=禁用 | 1=最低灵敏度 | ... | 9=最高灵敏度>"
     },
     "LockingMode": {
       "text2": "按键锁定",
@@ -203,6 +198,10 @@
     "ColourInversion": {
       "text2": "反转屏幕颜色",
       "desc": "反转OLED黑/白屏幕"
+    },
+    "LOGOTime": {
+      "text2": ["Boot logo", "duration"],
+      "desc": "Sets the duration for the boot logo (s=seconds)"
     }
   }
 }

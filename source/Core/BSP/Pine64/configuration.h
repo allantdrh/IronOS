@@ -124,7 +124,7 @@
 #define POWER_LIMIT_STEPS      5                         //
 #define OP_AMP_GAIN_STAGE      OP_AMP_GAIN_STAGE_PINECIL // Uses TS100 resistors
 #define TEMP_uV_LOOKUP_HAKKO                             // Use Hakko lookup table
-#define USB_PD_VMAX            20                        // Maximum voltage for PD to negotiate
+#define USB_PD_VMAX            21                        // Maximum voltage for PD to negotiate
 #define PID_TIM_HZ             (8)                       // Tick rate of the PID loop
 #define MAX_TEMP_C             450                       // Max soldering temp selectable °C
 #define MAX_TEMP_F             850                       // Max soldering temp selectable °F
@@ -142,6 +142,7 @@
 #define ACCEL_BMA
 #define ACCEL_SC7
 #define HALL_SENSOR
+#define VBUS_MOD_TEST
 #define HALL_SI7210
 #define DEBUG_UART_OUTPUT
 
@@ -150,3 +151,7 @@
 #define TIP_RESISTANCE           75 // x10 ohms, 7.5 typical for Pinecil tips
 #endif
 #endif
+
+#define FLASH_LOGOADDR (0x08000000 + (126 * 1024))
+
+#define HAS_POWER_DEBUG_MENU

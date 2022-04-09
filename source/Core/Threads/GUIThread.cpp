@@ -7,23 +7,26 @@
 extern "C" {
 #include "FreeRTOSConfig.h"
 }
+#include "BootLogo.h"
 #include "Buttons.hpp"
 #include "I2CBB.hpp"
 #include "LIS2DH12.hpp"
+#include "MMA8652FC.hpp"
+#include "OLED.hpp"
 #include "Settings.h"
 #include "TipThermoModel.h"
 #include "Translation.h"
 #include "cmsis_os.h"
 #include "configuration.h"
+#include "history.hpp"
 #include "main.hpp"
+#include "power.hpp"
+#include "settingsGUI.hpp"
 #include "stdlib.h"
 #include "string.h"
-#include <MMA8652FC.hpp>
-#include <gui.hpp>
-#include <history.hpp>
-#include <power.hpp>
 #if POW_PD
 #include "USBPD.h"
+#include "pd.h"
 #endif
 // File local variables
 extern uint32_t   currentTempTargetDegC;
@@ -254,12 +257,7 @@ static void gui_solderingTempAdjust() {
     if (xTaskGetTickCount() - lastChange > (TICKS_SECOND * 2))
       return; // exit if user just doesn't press anything for a bit
 
-#ifdef OLED_FLIP
-    if (!OLED::getRotation()) {
-#else
     if (OLED::getRotation()) {
-#endif
-
       OLED::print(getSettingValue(SettingsOptions::ReverseButtonTempChangeEnabled) ? SymbolPlus : SymbolMinus, FontStyle::LARGE);
     } else {
       OLED::print(getSettingValue(SettingsOptions::ReverseButtonTempChangeEnabled) ? SymbolMinus : SymbolPlus, FontStyle::LARGE);
@@ -273,11 +271,7 @@ static void gui_solderingTempAdjust() {
       OLED::drawSymbol(1);
     }
     OLED::print(SymbolSpace, FontStyle::LARGE);
-#ifdef OLED_FLIP
-    if (!OLED::getRotation()) {
-#else
     if (OLED::getRotation()) {
-#endif
       OLED::print(getSettingValue(SettingsOptions::ReverseButtonTempChangeEnabled) ? SymbolMinus : SymbolPlus, FontStyle::LARGE);
     } else {
       OLED::print(getSettingValue(SettingsOptions::ReverseButtonTempChangeEnabled) ? SymbolPlus : SymbolMinus, FontStyle::LARGE);
@@ -548,27 +542,21 @@ static void gui_solderingMode(uint8_t jumpToSleep) {
       }
     }
     // else we update the screen information
-#ifdef OLED_FLIP
-    if (!OLED::getRotation()) {
-#else
-    if (OLED::getRotation()) {
-#endif
-      OLED::setCursor(50, 0);
-    } else {
-      OLED::setCursor(-1, 0);
-    }
+
     OLED::clearScreen();
+
     // Draw in the screen details
     if (getSettingValue(SettingsOptions::DetailedSoldering)) {
+      if (OLED::getRotation()) {
+        OLED::setCursor(50, 0);
+      } else {
+        OLED::setCursor(-1, 0);
+      }
       gui_drawTipTemp(true, FontStyle::LARGE);
 
 #ifndef NO_SLEEP_MODE
       if (getSettingValue(SettingsOptions::Sensitivity) && getSettingValue(SettingsOptions::SleepTime)) {
-#ifdef OLED_FLIP
-        if (!OLED::getRotation()) {
-#else
         if (OLED::getRotation()) {
-#endif
           OLED::setCursor(32, 0);
         } else {
           OLED::setCursor(47, 0);
@@ -578,11 +566,7 @@ static void gui_solderingMode(uint8_t jumpToSleep) {
 #endif
 
       if (boostModeOn) {
-#ifdef OLED_FLIP
-        if (!OLED::getRotation()) {
-#else
         if (OLED::getRotation()) {
-#endif
           OLED::setCursor(38, 8);
         } else {
           OLED::setCursor(55, 8);
@@ -590,11 +574,7 @@ static void gui_solderingMode(uint8_t jumpToSleep) {
         OLED::print(SymbolPlus, FontStyle::SMALL);
       }
 
-#ifdef OLED_FLIP
-      if (!OLED::getRotation()) {
-#else
       if (OLED::getRotation()) {
-#endif
         OLED::setCursor(0, 0);
       } else {
         OLED::setCursor(67, 0);
@@ -604,11 +584,7 @@ static void gui_solderingMode(uint8_t jumpToSleep) {
       OLED::printNumber(x10WattHistory.average() % 10, 1, FontStyle::SMALL);
       OLED::print(SymbolWatts, FontStyle::SMALL);
 
-#ifdef OLED_FLIP
-      if (!OLED::getRotation()) {
-#else
       if (OLED::getRotation()) {
-#endif
         OLED::setCursor(0, 8);
       } else {
         OLED::setCursor(67, 8);
@@ -616,6 +592,7 @@ static void gui_solderingMode(uint8_t jumpToSleep) {
       printVoltage();
       OLED::print(SymbolVolts, FontStyle::SMALL);
     } else {
+      OLED::setCursor(0, 0);
       // We switch the layout direction depending on the orientation of the oled
       if (OLED::getRotation()) {
         // battery
@@ -759,18 +736,27 @@ void showDebugMenu(void) {
           sourceNumber = 0;
         } else {
           // We are not powered via DC, so want to display the appropriate state for PD or QC
-          bool poweredbyPD = false;
+          bool poweredbyPD        = false;
+          bool pdHasVBUSConnected = false;
 #if POW_PD
           if (USBPowerDelivery::fusbPresent()) {
             // We are PD capable
             if (USBPowerDelivery::negotiationComplete()) {
               // We are powered via PD
               poweredbyPD = true;
+#ifdef VBUS_MOD_TEST
+              pdHasVBUSConnected = USBPowerDelivery::isVBUSConnected();
+#endif
             }
           }
 #endif
           if (poweredbyPD) {
-            sourceNumber = 2;
+
+            if (pdHasVBUSConnected) {
+              sourceNumber = 2;
+            } else {
+              sourceNumber = 3;
+            }
           } else {
             sourceNumber = 1;
           }
@@ -782,6 +768,17 @@ void showDebugMenu(void) {
       // Max deg C limit
       OLED::printNumber(TipThermoModel::getTipMaxInC(), 3, FontStyle::SMALL);
       break;
+#ifdef HALL_SENSOR
+    case 13:
+      // Print raw hall effect value if availabe, none if hall effect disabled.
+      {
+        int16_t hallEffectStrength = getRawHallEffect();
+        if (hallEffectStrength < 0)
+          hallEffectStrength = -hallEffectStrength;
+        OLED::printNumber(hallEffectStrength, 6, FontStyle::SMALL);
+      }
+      break;
+#endif
     default:
       break;
     }
@@ -792,12 +789,92 @@ void showDebugMenu(void) {
       return;
     else if (b == BUTTON_F_SHORT) {
       screen++;
+#ifdef HALL_SENSOR
+      screen = screen % 14;
+#else
       screen = screen % 13;
+#endif
     }
     GUIDelay();
   }
 }
 
+#if POW_PD
+#ifdef HAS_POWER_DEBUG_MENU
+static void showPDDebug(void) {
+  // Print out the USB-PD state
+  // Basically this is like the Debug menu, but instead we want to print out the PD status
+  uint8_t     screen = 0;
+  ButtonState b;
+  for (;;) {
+    OLED::clearScreen();                          // Ensure the buffer starts clean
+    OLED::setCursor(0, 0);                        // Position the cursor at the 0,0 (top left)
+    OLED::print(SymbolPDDebug, FontStyle::SMALL); // Print Title
+    OLED::setCursor(0, 8);                        // second line
+    if (screen == 0) {
+      // Print the PD state machine
+      OLED::print(SymbolState, FontStyle::SMALL);
+      OLED::print(SymbolSpace, FontStyle::SMALL);
+      OLED::printNumber(USBPowerDelivery::getStateNumber(), 2, FontStyle::SMALL, true);
+      OLED::print(SymbolSpace, FontStyle::SMALL);
+      // Also print vbus mod status
+      if (USBPowerDelivery::fusbPresent()) {
+        if (USBPowerDelivery::negotiationComplete() || (xTaskGetTickCount() > (TICKS_SECOND * 10))) {
+          if (!USBPowerDelivery::isVBUSConnected()) {
+            OLED::print(SymbolNoVBus, FontStyle::SMALL);
+          } else {
+            OLED::print(SymbolVBus, FontStyle::SMALL);
+          }
+        }
+      }
+    } else {
+      // Print out the Proposed power options one by one
+      auto    lastCaps = USBPowerDelivery::getLastSeenCapabilities();
+      uint8_t numobj   = PD_NUMOBJ_GET(lastCaps);
+      if ((screen - 1) < numobj) {
+        int voltage_mv     = 0;
+        int min_voltage    = 0;
+        int current_a_x100 = 0;
+        if ((lastCaps->obj[screen - 1] & PD_PDO_TYPE) == PD_PDO_TYPE_FIXED) {
+          voltage_mv     = PD_PDV2MV(PD_PDO_SRC_FIXED_VOLTAGE_GET(lastCaps->obj[screen - 1])); // voltage in mV units
+          current_a_x100 = PD_PDO_SRC_FIXED_CURRENT_GET(lastCaps->obj[screen - 1]);            // current in 10mA units
+        } else {
+          voltage_mv     = PD_PAV2MV(PD_APDO_PPS_MAX_VOLTAGE_GET(lastCaps->obj[screen - 1]));
+          min_voltage    = PD_PAV2MV(PD_APDO_PPS_MIN_VOLTAGE_GET(lastCaps->obj[screen - 1]));
+          current_a_x100 = PD_PAI2CA(PD_APDO_PPS_CURRENT_GET(lastCaps->obj[screen - 1])); // max current in 10mA units
+        }
+        // print out this entry of the proposal
+        OLED::printNumber(screen, 1, FontStyle::SMALL, true); // print the entry number
+        OLED::print(SymbolSpace, FontStyle::SMALL);
+        if (min_voltage > 0) {
+          OLED::printNumber(min_voltage / 1000, 2, FontStyle::SMALL, true); // print the voltage
+          OLED::print(SymbolMinus, FontStyle::SMALL);
+        }
+        OLED::printNumber(voltage_mv / 1000, 2, FontStyle::SMALL, true); // print the voltage
+        OLED::print(SymbolVolts, FontStyle::SMALL);
+        OLED::print(SymbolSpace, FontStyle::SMALL);
+        OLED::printNumber(current_a_x100 / 100, 2, FontStyle::SMALL, true); // print the current in 0.1A res
+        OLED::print(SymbolDot, FontStyle::SMALL);
+        OLED::printNumber(current_a_x100 % 100, 2, FontStyle::SMALL, true); // print the current in 0.1A res
+        OLED::print(SymbolAmps, FontStyle::SMALL);
+
+      } else {
+        screen = 0;
+      }
+    }
+
+    OLED::refresh();
+    b = getButtonState();
+    if (b == BUTTON_B_SHORT)
+      return;
+    else if (b == BUTTON_F_SHORT) {
+      screen++;
+    }
+    GUIDelay();
+  }
+}
+#endif
+#endif
 void showWarnings() {
   // Display alert if settings were reset
   if (settingsWereReset) {
@@ -861,16 +938,15 @@ void startGUITask(void const *argument) {
   }
   getTipRawTemp(1); // reset filter
   OLED::setRotation(getSettingValue(SettingsOptions::OrientationMode) & 1);
-  uint32_t ticks = xTaskGetTickCount();
-  ticks += (TICKS_SECOND * 4); // 4 seconds from now
-  while (xTaskGetTickCount() < ticks) {
-    if (showBootLogoIfavailable() == false)
-      ticks = xTaskGetTickCount();
-    ButtonState buttons = getButtonState();
-    if (buttons)
-      ticks = xTaskGetTickCount(); // make timeout now so we will exit
-    GUIDelay();
+  // If the front button is held down, on supported devices, show PD debugging metrics
+#if POW_PD
+#ifdef HAS_POWER_DEBUG_MENU
+  if (getButtonA()) {
+    showPDDebug();
   }
+#endif
+#endif
+  BootLogo::handleShowingLogo((uint8_t *)FLASH_LOGOADDR);
 
   showWarnings();
 
@@ -950,32 +1026,20 @@ void startGUITask(void const *argument) {
     }
     // Clear the lcd buffer
     OLED::clearScreen();
-#ifdef OLED_FLIP
-    if (!OLED::getRotation()) {
-#else
     if (OLED::getRotation()) {
-#endif
       OLED::setCursor(50, 0);
     } else {
       OLED::setCursor(-1, 0);
     }
     if (getSettingValue(SettingsOptions::DetailedIDLE)) {
       if (isTipDisconnected()) {
-#ifdef OLED_FLIP
-        if (!OLED::getRotation()) {
-#else
         if (OLED::getRotation()) {
-#endif
           // in right handed mode we want to draw over the first part
           OLED::drawArea(54, 0, 42, 16, disconnectedTipF);
         } else {
           OLED::drawArea(0, 0, 42, 16, disconnectedTip);
         }
-#ifdef OLED_FLIP
-        if (!OLED::getRotation()) {
-#else
         if (OLED::getRotation()) {
-#endif
           OLED::setCursor(-1, 0);
         } else {
           OLED::setCursor(42, 0);
@@ -984,11 +1048,7 @@ void startGUITask(void const *argument) {
         OLED::printNumber(Vlt / 10, 2, FontStyle::LARGE);
         OLED::print(SymbolDot, FontStyle::LARGE);
         OLED::printNumber(Vlt % 10, 1, FontStyle::LARGE);
-#ifdef OLED_FLIP
-        if (!OLED::getRotation()) {
-#else
         if (OLED::getRotation()) {
-#endif
           OLED::setCursor(48, 8);
         } else {
           OLED::setCursor(91, 8);
@@ -1000,11 +1060,7 @@ void startGUITask(void const *argument) {
           // 1000 tick/sec
           // OFF 300ms ON 700ms
           gui_drawTipTemp(true, FontStyle::LARGE); // draw in the temp
-#ifdef OLED_FLIP
-        if (!OLED::getRotation()) {
-#else
         if (OLED::getRotation()) {
-#endif
           OLED::setCursor(6, 0);
         } else {
           OLED::setCursor(73, 0); // top right
@@ -1014,11 +1070,7 @@ void startGUITask(void const *argument) {
           OLED::print(SymbolDegF, FontStyle::SMALL);
         else
           OLED::print(SymbolDegC, FontStyle::SMALL);
-#ifdef OLED_FLIP
-        if (!OLED::getRotation()) {
-#else
         if (OLED::getRotation()) {
-#endif
           OLED::setCursor(0, 8);
         } else {
           OLED::setCursor(67, 8); // bottom right
@@ -1028,11 +1080,7 @@ void startGUITask(void const *argument) {
       }
 
     } else {
-#ifdef OLED_FLIP
-      if (!OLED::getRotation()) {
-#else
       if (OLED::getRotation()) {
-#endif
         OLED::drawArea(54, 0, 42, 16, buttonAF);
         OLED::drawArea(12, 0, 42, 16, buttonBF);
         OLED::setCursor(0, 0);
@@ -1055,11 +1103,7 @@ void startGUITask(void const *argument) {
       if (tempOnDisplay || tipDisconnectedDisplay) {
         // draw temp over the start soldering button
         // Location changes on screen rotation
-#ifdef OLED_FLIP
-        if (!OLED::getRotation()) {
-#else
         if (OLED::getRotation()) {
-#endif
           // in right handed mode we want to draw over the first part
           OLED::fillArea(55, 0, 41, 16, 0); // clear the area for the temp
           OLED::setCursor(56, 0);
@@ -1075,11 +1119,7 @@ void startGUITask(void const *argument) {
         } else {
           // Draw in missing tip symbol
 
-#ifdef OLED_FLIP
-          if (!OLED::getRotation()) {
-#else
           if (OLED::getRotation()) {
-#endif
             // in right handed mode we want to draw over the first part
             OLED::drawArea(54, 0, 42, 16, disconnectedTipF);
           } else {
